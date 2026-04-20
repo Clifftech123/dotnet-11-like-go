@@ -42,7 +42,7 @@ All four are in this repo. Two of them — `#:include` and the transitive-direct
 
 ### `includes.cs`  the "compile list"
 
-```csharp
+```cs
 #:include src/util/StringExtensions.cs
 #:include src/config/Config.cs
 #:include src/config/JsonContext.cs
@@ -57,7 +57,7 @@ Keeping the list flat and in one file means one place to look when something isn
 
 ### `src/main.cs` — the entry point
 
-```csharp
+```cs
 #:property TargetFramework=net11.0
 #:property LangVersion=preview
 #:property ExperimentalFileBasedProgramEnableIncludeDirective=true
