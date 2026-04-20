@@ -6,7 +6,7 @@ A real ASP.NET Core + EF Core + PostgreSQL web service — CRUD, DI, Minimal API
 OpenAPI, middleware, exception handling — with **no `.csproj`, no `.sln`, no `.slnx`,
 no project metadata of any kind**. Just `.cs` files and a few directives at the top.
 
-```
+```bash
 dotnet run src/main.cs       # runs the whole web service
 dotnet publish src/main.cs   # one self-contained native binary
 ./bin/main                   # like shipping a Go binary, except it's C#
@@ -29,7 +29,7 @@ File-based apps ship as plain `.cs` files. Project metadata lives inline, at the
 
 All four are in this repo. Two of them — `#:include` and the transitive-directive flag that makes it useful — are still **experimental in .NET 11 preview 3** and have to be opted into with properties.
 
-### `packages.cs` — the "go.mod"
+### `packages.cs`  the "go.mod"
 
 ```csharp
 #:sdk Microsoft.NET.Sdk.Web
@@ -40,7 +40,7 @@ All four are in this repo. Two of them — `#:include` and the transitive-direct
 
 `Microsoft.NET.Sdk.Web` is what unlocks `WebApplication.CreateBuilder` and the rest of ASP.NET Core. The `#:package` lines pin NuGet versions, same syntax the CLI understands for `dotnet package add`.
 
-### `includes.cs` — the "compile list"
+### `includes.cs`  the "compile list"
 
 ```csharp
 #:include src/util/StringExtensions.cs
@@ -51,7 +51,7 @@ All four are in this repo. Two of them — `#:include` and the transitive-direct
 #:include src/middleware/logger.cs
 ```
 
-`#:include` pulls another `.cs` file into the same compilation. Think `#include` in C, or `package main` auto-picking up every file in a Go folder — except explicit. No glob, no magic: the file compiles only if it's listed here.
+`#:include` pulls another `.cs` file into the same compilation. Think `#include` in C, or `package main` auto-picking up every file in a Go folder  except explicit. No glob, no magic: the file compiles only if it's listed here.
 
 Keeping the list flat and in one file means one place to look when something isn't being picked up.
 
@@ -69,14 +69,14 @@ Keeping the list flat and in one file means one place to look when something isn
 
 Four property lines do the work of an entire `.csproj`:
 
-- `TargetFramework=net11.0` — target the .NET 11 preview runtime.
-- `LangVersion=preview` — enable preview C# language features (C# 14 `extension` blocks, etc.).
-- `ExperimentalFileBasedProgramEnableIncludeDirective=true` — turn on `#:include` itself.
-- `ExperimentalFileBasedProgramEnableTransitiveDirectives=true` — let an included file carry **its own** `#:sdk` / `#:package` / `#:property` directives back up into the compilation. Without this, `#:include packages.cs` would be a no-op for NuGet.
+- `TargetFramework=net11.0`  target the .NET 11 preview runtime.
+- `LangVersion=preview`  enable preview C# language features (C# 14 `extension` blocks, etc.).
+- `ExperimentalFileBasedProgramEnableIncludeDirective=true`  turn on `#:include` itself.
+- `ExperimentalFileBasedProgramEnableTransitiveDirectives=true`  let an included file carry **its own** `#:sdk` / `#:package` / `#:property` directives back up into the compilation. Without this, `#:include packages.cs` would be a no-op for NuGet.
 
 Then `main.cs` `#:include`s `packages.cs` (for the SDK + NuGet pins) and `includes.cs` (for every source file). Because of the transitive flag, all those directives behave as if they were written directly in `main.cs`.
 
-**Result:** the only thing the compiler is ever told about this project is `src/main.cs`. Everything else — SDK, packages, sources, compile order — reaches it through directive transitivity.
+**Result:** the only thing the compiler is ever told about this project is `src/main.cs`. Everything else — SDK, packages, sources, compile order  reaches it through directive transitivity.
 
 ---
 

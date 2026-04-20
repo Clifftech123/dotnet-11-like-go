@@ -2,6 +2,8 @@
 #:property LangVersion=preview
 #:property ExperimentalFileBasedProgramEnableIncludeDirective=true
 #:property ExperimentalFileBasedProgramEnableTransitiveDirectives=true
+#:property PublishAot=false
+#:property IsAotCompatible=false
 
 #:include ../packages.cs
 #:include ../includes.cs
@@ -10,6 +12,7 @@
 
 
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 using src.config;
 using src.data;
 using src.domain.author;
@@ -52,12 +55,27 @@ class Program
         builder.Services.AddProblemDetails();
         builder.Services.AddOpenApi();
 
+    
+
         var app = builder.Build();
+
+        // ensure schema exists (dev-only; real migrations come later)
+        using (var scope = app.Services.CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            await db.Database.EnsureCreatedAsync();
+        }
 
         // middleware things
         app.UseExceptionHandler();
         app.UseMiddleware<RequestLogger>();
         app.MapOpenApi();
+        app.MapScalarApiReference("/docs", options =>
+        {
+            options.WithTitle("dotnet-11-like-go")
+                   .WithTheme(ScalarTheme.Mars)
+                   .WithDefaultHttpClient(ScalarTarget.Shell, ScalarClient.Curl);
+        });
 
         // endpoint things
         var authors = app.MapGroup("/api/authors").WithTags("authors");
